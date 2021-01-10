@@ -52,7 +52,7 @@ def load_arguments(self, _):
     webapp_name_arg_type = CLIArgumentType(configured_default='web', options_list=['--name', '-n'], metavar='NAME',
                                            completer=get_resource_name_completion_list('Microsoft.Web/sites'),
                                            id_part='name',
-                                           help="name of the web app. You can configure the default using `az configure --defaults web=<name>`",
+                                           help="name of the web app. If left unspecified, a name will be randomly generated. You can configure the default using `az configure --defaults web=<name>`",
                                            local_context_attribute=LocalContextAttribute(name='web_name', actions=[
                                                LocalContextAction.GET]))
     functionapp_name_arg_type = CLIArgumentType(options_list=['--name', '-n'], metavar='NAME',
@@ -231,6 +231,8 @@ def load_arguments(self, _):
             c.argument('key_vault_certificate_name', help='The name of the certificate in Key Vault')
         with self.argument_context(scope + ' config ssl create') as c:
             c.argument('hostname', help='The custom domain name')
+        with self.argument_context(scope + ' config ssl show') as c:
+            c.argument('certificate_name', help='The name of the certificate')
         with self.argument_context(scope + ' config hostname') as c:
             c.argument('hostname', completer=get_hostname_completion_list,
                        help="hostname assigned to the site, such as custom domains", id_part='child_name_1')
@@ -387,6 +389,8 @@ def load_arguments(self, _):
         c.argument('auto_swap_slot', help='target slot to auto swap', default='production')
         c.argument('disable', help='disable auto swap', action='store_true')
         c.argument('target_slot', help="target slot to swap, default to 'production'")
+        c.argument('preserve_vnet', help="preserve Virtual Network to the slot during swap, default to 'true'",
+                   arg_type=get_three_state_flag(return_label=True))
     with self.argument_context('webapp deployment slot create') as c:
         c.argument('configuration_source',
                    help="source slot to clone configurations from. Use web app's name to refer to the production slot")
@@ -774,6 +778,8 @@ def load_arguments(self, _):
         c.argument('auto_swap_slot', help='target slot to auto swap', default='production')
         c.argument('disable', help='disable auto swap', action='store_true')
         c.argument('target_slot', help="target slot to swap, default to 'production'")
+        c.argument('preserve_vnet', help="preserve Virtual Network to the slot during swap, default to 'true'",
+                   arg_type=get_three_state_flag(return_label=True))
     with self.argument_context('functionapp deployment slot create') as c:
         c.argument('configuration_source',
                    help="source slot to clone configurations from. Use function app's name to refer to the production slot")
